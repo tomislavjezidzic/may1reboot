@@ -23,7 +23,7 @@ class May1rebootAssets extends AssetBundle
     public
     $css = [
         'may1rebootMainCSS' => [
-            'path' => 'dist/style.css',
+            'path' => 'dist/bundle.css',
             'in_footer' => false,
             'version' => 1.0
         ],

@@ -50,6 +50,8 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
-    "gsap": "^3.0.4"
+    "gsap": "^3.1.1",
+    "three": "^0.113.2",
+    "three-orbit-controls": "^82.1.0"
   }
 }

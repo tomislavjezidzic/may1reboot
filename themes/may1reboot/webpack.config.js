@@ -29,7 +29,7 @@ const plugins = [
     new BrowserSyncPlugin({
         host: "localhost",
         port: 3000,
-        proxy: "www.dwp.loc/",
+        proxy: "www.bwp.loc/may1reboot",
         files: ["**/*.php", "**/*.html", "./static/dist/*.js", "./static/dist/*.css"]
     }, {
         reload: false

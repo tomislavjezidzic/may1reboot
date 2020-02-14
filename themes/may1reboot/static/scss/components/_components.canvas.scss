@@ -1,0 +1,17 @@
+.c-canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+}
+
+
+// TODO: remove this
+button {
+    position: absolute;
+    display: block;
+    z-index: 99;
+    top: 30px;
+    left: 30px;
+}
