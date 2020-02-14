@@ -1,0 +1,55 @@
+{
+  "name": "may1reboot",
+  "version": "0.1.0",
+  "description": "Frontend project template based on webpack, es6 and scss",
+  "author": "Bornfight",
+  "email": "frontend@bornfight.com",
+  "private": true,
+  "scripts": {
+    "build": "env NODE_ENV=production webpack --mode production",
+    "build:analyze": "env NODE_ENV=production ANALYZE=true webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/preset-env": "^7.1.6",
+    "@degordian/sassbox": "^0.4.0",
+    "@degordian/standards": "^1.0.8",
+    "autoprefixer": "^9.3.1",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "browser-sync": "^2.26.3",
+    "browser-sync-webpack-plugin": "^2.2.2",
+    "css-loader": "^1.0.1",
+    "mini-css-extract-plugin": "^0.4.4",
+    "node-sass": "^4.10.0",
+    "normalize.css": "^8.0.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^7.1.0",
+    "stylelint": "^9.8.0",
+    "stylelint-config-recommended": "^2.0.0",
+    "stylelint-scss": "^3.4.0",
+    "stylelint-selector-bem-pattern": "^2.0.0",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "webpack": "^4.26.0",
+    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-cli": "^3.1.2"
+  },
+  "dependencies": {
+    "gsap": "^3.0.4"
+  }
+}

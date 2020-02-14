@@ -1,0 +1,7 @@
+wp
+/.idea
+/debug.log
+/ai1wm-backups
+/plugins/
+/uploads/
+.DS_Store

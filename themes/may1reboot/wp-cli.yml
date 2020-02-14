@@ -1,0 +1,7 @@
+path: ../../../wp
+
+require:
+    - inc/custom-cli-commands.php
+
+apache_modules:
+    - mod_rewrite
