@@ -11,6 +11,10 @@ import CameraPathLine from "./components/CameraPathLine";
 import Animation from "./components/Animation";
 import RandomBoxes from "./components/RandomBoxes";
 import StartEndSphere from "./components/StartEndSphere";
+import MainModelLoad from "./components/MainModelLoad";
+import MainLight from "./components/MainLight";
+import Floor from "./components/Floor";
+import Sparkles from "./components/Sparkles";
 
 function docReady(fn) {
     if (document.readyState === "complete" || document.readyState === "interactive") {
@@ -22,16 +26,29 @@ function docReady(fn) {
 
 // dom loaded
 docReady(() => {
-    let renderer = new Renderer().init(THREE);
-    let scene = new Scene().init(THREE);
-    let camera = new Camera().init(THREE);
-    // let controls = new Controls().init(OrbitControls, camera, renderer);
-    let controls = null;
-    let pointsLine = new PointsLine().init(THREE);
-    let cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
+    const renderer = new Renderer().init(THREE);
+    const scene = new Scene().init(THREE);
+    const camera = new Camera().init(THREE);
+    const controls = new Controls().init(OrbitControls, camera, renderer);
+    const sparkles = new Sparkles()
+    // const controls = null;
+    const pointsLine = new PointsLine().init(THREE);
+    const cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
 
-    new RandomBoxes().init(THREE, scene, pointsLine);
-    new StartEndSphere().init(THREE, scene);
+    // new RandomBoxes().init(THREE, scene, pointsLine);
+    // new StartEndSphere().init(THREE, scene);
+    new MainModelLoad().init(THREE, scene);
+
+    new MainLight().init(THREE, scene);
+    new Floor().init(THREE, scene);
 
     new Animation().init(THREE, controls, renderer, scene, camera, pointsLine);
+
+
+    const globalSparkleContainer = new THREE.Object3D();
+    globalSparkleContainer.position.x = 1;
+    globalSparkleContainer.position.y = 0.06;
+    globalSparkleContainer.position.z = 0;
+    sparkles.init(THREE, globalSparkleContainer, 3.5, 3.5, 45);
+    scene.add(globalSparkleContainer);
 });
