@@ -5,11 +5,11 @@ export default class Scene {
 
     init(THREE) {
         const scene = new THREE.Scene();
-        const fogColor = new THREE.Color(0xffffff);
+        const fogColor = new THREE.Color(0x888888);
 
-        // scene.background = fogColor;
+        scene.background = fogColor;
         // TODO
-        // scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
+        scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
 
         return scene;
     }

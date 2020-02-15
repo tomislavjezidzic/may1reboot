@@ -11,7 +11,7 @@ export default class Sparkles {
             blending: THREE.AdditiveBlending
         });
 
-        this.sparkleGeometry = new THREE.SphereBufferGeometry(0.002, 5, 5);
+        this.sparkleGeometry = new THREE.SphereBufferGeometry(0.001, 5, 5);
         this.sparkleMaterial = new THREE.MeshBasicMaterial({
             color: 0xfef307
         });

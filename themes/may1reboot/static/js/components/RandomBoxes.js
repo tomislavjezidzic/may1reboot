@@ -6,7 +6,7 @@ export default class RandomBoxes {
     init(THREE, scene, pointsLine) {
         for (let i = 0; i < pointsLine.points.length; i++) {
             let b = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.BoxGeometry(0.01, 0.01, 0.01),
                 new THREE.MeshBasicMaterial({color: "#EEEDDD"})
             );
 

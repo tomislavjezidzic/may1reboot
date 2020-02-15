@@ -7232,69 +7232,45 @@ function () {
       var camPosIndex = 0;
       var posIndex = 0;
       var diff = 0;
-      var counter = 0; // document.querySelector("button").addEventListener("click", ev => {
-      //     ev.preventDefault();
-      //     var curve = new THREE.CatmullRomCurve3([
-      //         pointsLine.getPoint(counter), pointsLine.getPoint(counter + 1)
-      //     ]);
-      //     posIndex += curve.getLength();
-      //     curve.tension = 0.5;
-      //
-      //     console.log(Math.pow(pointsLine.getPoint(counter).distanceToSquared(pointsLine.getPoint(counter + 1)), 0.5));
-      //
-      //     diff = posIndex - camPosIndex;
-      //     counter++;
-      // });
-      //
-      // let camPos = pointsLine.getPoint(camPosIndex);
-      // let camRot = pointsLine.getTangent(camPosIndex);
-      //
-      //
-      // camPos = pointsLine.getPoint(camPosIndex / 5000);
-      // camRot = pointsLine.getTangent(camPosIndex / 5000);
-      //
-      // if (camPosIndex + 100 > posIndex) {
-      //     camPosIndex += 1 - (camPosIndex + 100 - posIndex) / 100;
-      // } else if (camPosIndex < posIndex - (diff - 100)) {
-      //     camPosIndex += -(posIndex - camPosIndex - diff - 10) / 100;
-      // } else {
-      //     camPosIndex += 1;
-      // }
-      //
-      // camera.position.x = camPos.x;
-      // camera.position.y = camPos.y;
-      // camera.position.z = camPos.z;
-      //
-      // camera.rotation.x = camRot.x;
-      // camera.rotation.y = camRot.y;
-      // camera.rotation.z = camRot.z;
-      //
-      // camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 5000));
+      document.querySelector("button").addEventListener("click", function (ev) {
+        ev.preventDefault();
+        posIndex += 498;
+        diff = posIndex - camPosIndex;
+      });
+      var camPos = pointsLine.getPoint(camPosIndex / 3000);
+      var camRot = pointsLine.getTangent(camPosIndex / 3000);
+      camera.position.x = camPos.x;
+      camera.position.y = camPos.y;
+      camera.position.z = camPos.z;
+      camera.rotation.x = camRot.x;
+      camera.rotation.y = camRot.y;
+      camera.rotation.z = camRot.z;
+      camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 3000));
 
       function update() {
-        controls.update();
-        renderer.render(scene, camera); // if (camPosIndex < posIndex && camPosIndex < 5000) {
-        //     camPos = pointsLine.getPoint(camPosIndex / 5000);
-        //     camRot = pointsLine.getTangent(camPosIndex / 5000);
-        //
-        //     if (camPosIndex + 100 > posIndex) {
-        //         camPosIndex += 1 - (camPosIndex + 100 - posIndex) / 100;
-        //     } else if (camPosIndex < posIndex - (diff - 100)) {
-        //         camPosIndex += -(posIndex - camPosIndex - diff - 10) / 100;
-        //     } else {
-        //         camPosIndex += 1;
-        //     }
-        //
-        //     camera.position.x = camPos.x;
-        //     camera.position.y = camPos.y;
-        //     camera.position.z = camPos.z;
-        //
-        //     camera.rotation.x = camRot.x;
-        //     camera.rotation.y = camRot.y;
-        //     camera.rotation.z = camRot.z;
-        //
-        //     camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 5000));
-        // }
+        // controls.update();
+        renderer.render(scene, camera);
+
+        if (camPosIndex < posIndex && camPosIndex < 3000) {
+          camPos = pointsLine.getPoint(camPosIndex / 3000);
+          camRot = pointsLine.getTangent(camPosIndex / 3000);
+
+          if (camPosIndex + 100 > posIndex) {
+            camPosIndex += 1 - (Math.floor(camPosIndex) + 100 - posIndex) / 100;
+          } else if (camPosIndex < posIndex - (diff - 100)) {
+            camPosIndex += -(posIndex - camPosIndex - diff - 30) / 100;
+          } else {
+            camPosIndex += 1.5;
+          }
+
+          camera.position.x = camPos.x;
+          camera.position.y = camPos.y;
+          camera.position.z = camPos.z;
+          camera.rotation.x = camRot.x;
+          camera.rotation.y = camRot.y;
+          camera.rotation.z = camRot.z;
+          camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 3000));
+        }
 
         requestAnimationFrame(update);
       }
@@ -7478,6 +7454,71 @@ function () {
 
 /***/ }),
 
+/***/ "./static/js/components/HouseLights.js":
+/*!*********************************************!*\
+  !*** ./static/js/components/HouseLights.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return HouseLights; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var HouseLights =
+/*#__PURE__*/
+function () {
+  function HouseLights() {
+    _classCallCheck(this, HouseLights);
+  }
+
+  _createClass(HouseLights, [{
+    key: "init",
+    value: function init(THREE, scene) {
+      this.sphere = new THREE.SphereBufferGeometry(0.007, 5, 5);
+      var light_1 = this.lightInit([1.4, 0.43, 0], THREE);
+      var light_2 = this.smallLightInit([1.05, 0.24, -0.50], THREE);
+      var light_3 = this.smallLightInit([1.05, 0.24, 0.45], THREE);
+      var light_4 = this.smallLightInit([1.55, 0.24, 0.45], THREE);
+      scene.add(light_1);
+      scene.add(light_2);
+      scene.add(light_3);
+      scene.add(light_4);
+    }
+  }, {
+    key: "lightInit",
+    value: function lightInit(position, THREE) {
+      var light = new THREE.PointLight(0xffff00, 0.4, 1);
+      light.add(new THREE.Mesh(this.sphere, new THREE.MeshBasicMaterial({
+        color: 0xffff00
+      })));
+      light.position.set(position[0], position[1], position[2]);
+      return light;
+    }
+  }, {
+    key: "smallLightInit",
+    value: function smallLightInit(position, THREE) {
+      var light = new THREE.PointLight(0xffff00, 0.3, 0.3);
+      light.add(new THREE.Mesh(this.sphere, new THREE.MeshBasicMaterial({
+        color: 0xffff00
+      })));
+      light.position.set(position[0], position[1], position[2]);
+      return light;
+    }
+  }]);
+
+  return HouseLights;
+}();
+
+
+
+/***/ }),
+
 /***/ "./static/js/components/MainLight.js":
 /*!*******************************************!*\
   !*** ./static/js/components/MainLight.js ***!
@@ -7606,7 +7647,7 @@ function () {
     key: "init",
     value: function init(THREE) {
       var pointsArr = [];
-      pointsArr.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(10, 0, -10), new THREE.Vector3(20, 20, 0), new THREE.Vector3(30, 30, 10), new THREE.Vector3(30, -20, 20), new THREE.Vector3(20, 0, 30), new THREE.Vector3(10, -10, 30), new THREE.Vector3(0, 0, 30), new THREE.Vector3(-10, 10, 30), new THREE.Vector3(-10, 20, 30), new THREE.Vector3(0, 30, 30), new THREE.Vector3(10, 35, 30), new THREE.Vector3(40, 30, 25), new THREE.Vector3(10, 25, 10), new THREE.Vector3(0, 30, 10), new THREE.Vector3(-10, 20, 10), new THREE.Vector3(-10, 10, 10), new THREE.Vector3(0, 0, 10), new THREE.Vector3(10, -10, 10), new THREE.Vector3(20, -15, 10), new THREE.Vector3(30, -15, 10), new THREE.Vector3(40, -15, 10), new THREE.Vector3(50, -15, 10), new THREE.Vector3(60, 0, 10), new THREE.Vector3(70, 10, 0), new THREE.Vector3(80, 60, 5), new THREE.Vector3(90, 5, 0), new THREE.Vector3(100, 0, 10), new THREE.Vector3(30, 40, 20), new THREE.Vector3(20, 0, 30), new THREE.Vector3(10, 10, 30), new THREE.Vector3(0, -10, 30), new THREE.Vector3(-10, 10, 35), new THREE.Vector3(-10, 20, 30), new THREE.Vector3(30, 30, 10), new THREE.Vector3(30, -20, 20), new THREE.Vector3(20, 0, 30), new THREE.Vector3(10, -10, 30), new THREE.Vector3(0, 0, 30), new THREE.Vector3(-10, 10, 30), new THREE.Vector3(-10, 20, 30), new THREE.Vector3(0, 30, 30), new THREE.Vector3(10, 35, 30), new THREE.Vector3(20, 30, 15));
+      pointsArr.push(new THREE.Vector3(2.53, 1.92, 2.72), new THREE.Vector3(1.52, 0.17, 1.34), new THREE.Vector3(0.64, 0.23, 1.8), new THREE.Vector3(0.1, 0.13, 0.06), new THREE.Vector3(0.75, 0.15, -1), new THREE.Vector3(1.4, 0.15, -1), new THREE.Vector3(2, 0.4, -0.4), new THREE.Vector3(1.18, 0.46, 1.03), new THREE.Vector3(-0.2, 0.26, 0.84), new THREE.Vector3(0.62, 0.17, 0), new THREE.Vector3(0.77, 0.19, -1.45), new THREE.Vector3(0.2, 0.19, -1.2), new THREE.Vector3(0.6, 0.15, -0.65));
       return new THREE.CatmullRomCurve3(pointsArr, false);
     }
   }]);
@@ -7645,7 +7686,7 @@ function () {
     key: "init",
     value: function init(THREE, scene, pointsLine) {
       for (var i = 0; i < pointsLine.points.length; i++) {
-        var b = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
+        var b = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), new THREE.MeshBasicMaterial({
           color: "#EEEDDD"
         }));
         b.position.x = pointsLine.points[i].x;
@@ -7692,6 +7733,7 @@ function () {
       var renderer = new THREE.WebGLRenderer();
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.domElement.classList.add('c-canvas');
       document.body.appendChild(renderer.domElement);
@@ -7733,10 +7775,10 @@ function () {
     key: "init",
     value: function init(THREE) {
       var scene = new THREE.Scene();
-      var fogColor = new THREE.Color(0xffffff); // scene.background = fogColor;
-      // TODO
-      // scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
+      var fogColor = new THREE.Color(0x888888);
+      scene.background = fogColor; // TODO
 
+      scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
       return scene;
     }
   }]);
@@ -7783,7 +7825,7 @@ function () {
         color: 0xffff00,
         blending: THREE.AdditiveBlending
       });
-      this.sparkleGeometry = new THREE.SphereBufferGeometry(0.002, 5, 5);
+      this.sparkleGeometry = new THREE.SphereBufferGeometry(0.001, 5, 5);
       this.sparkleMaterial = new THREE.MeshBasicMaterial({
         color: 0xfef307
       });
@@ -7907,10 +7949,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_MainLight__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/MainLight */ "./static/js/components/MainLight.js");
 /* harmony import */ var _components_Floor__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/Floor */ "./static/js/components/Floor.js");
 /* harmony import */ var _components_Sparkles__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/Sparkles */ "./static/js/components/Sparkles.js");
+/* harmony import */ var _components_HouseLights__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/HouseLights */ "./static/js/components/HouseLights.js");
 
 
 
 var OrbitControls = __webpack_require__(/*! three-orbit-controls */ "./node_modules/three-orbit-controls/index.js")(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 
@@ -7938,12 +7982,13 @@ function docReady(fn) {
 docReady(function () {
   var renderer = new _components_Renderer__WEBPACK_IMPORTED_MODULE_2__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__);
   var scene = new _components_Scene__WEBPACK_IMPORTED_MODULE_3__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__);
-  var camera = new _components_Camera__WEBPACK_IMPORTED_MODULE_4__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__);
-  var controls = new _components_Controls__WEBPACK_IMPORTED_MODULE_5__["default"]().init(OrbitControls, camera, renderer);
-  var sparkles = new _components_Sparkles__WEBPACK_IMPORTED_MODULE_14__["default"](); // const controls = null;
+  var camera = new _components_Camera__WEBPACK_IMPORTED_MODULE_4__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__); // const controls = new Controls().init(OrbitControls, camera, renderer);
 
-  var pointsLine = new _components_PointsLine__WEBPACK_IMPORTED_MODULE_6__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__);
-  var cameraPathLine = new _components_CameraPathLine__WEBPACK_IMPORTED_MODULE_7__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__, scene, pointsLine); // new RandomBoxes().init(THREE, scene, pointsLine);
+  var controls = null;
+  var sparkles = new _components_Sparkles__WEBPACK_IMPORTED_MODULE_14__["default"]();
+  var pointsLine = new _components_PointsLine__WEBPACK_IMPORTED_MODULE_6__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__); // const cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
+  // const houseLights = new HouseLights().init(THREE, scene);
+  // new RandomBoxes().init(THREE, scene, pointsLine);
   // new StartEndSphere().init(THREE, scene);
 
   new _components_MainModelLoad__WEBPACK_IMPORTED_MODULE_11__["default"]().init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__, scene);
@@ -7955,7 +8000,9 @@ docReady(function () {
   globalSparkleContainer.position.y = 0.06;
   globalSparkleContainer.position.z = 0;
   sparkles.init(three_build_three_module__WEBPACK_IMPORTED_MODULE_1__, globalSparkleContainer, 3.5, 3.5, 45);
-  scene.add(globalSparkleContainer);
+  scene.add(globalSparkleContainer); // document.addEventListener('click', ()=>{
+  //     console.log(camera.position);
+  // });
 });
 
 /***/ }),
