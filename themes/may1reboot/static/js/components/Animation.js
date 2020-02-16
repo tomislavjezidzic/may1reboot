@@ -1,6 +1,53 @@
+import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
+import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
+import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
+import {SavePass} from "three/examples/jsm/postprocessing/SavePass";
+import {CopyShader} from "three/examples/jsm/shaders/CopyShader";
+import {BlendShader} from "three/examples/jsm/shaders/BlendShader";
+
 export default class Animation {
     constructor() {
 
+    }
+
+    blurInit(THREE, scene, camera, renderer) {
+        // Post-processing inits
+        const composer = new EffectComposer(renderer);
+
+        // render pass
+        const renderPass = new RenderPass(scene, camera);
+
+        const renderTargetParameters = {
+            minFilter: THREE.LinearFilter,
+            magFilter: THREE.LinearFilter,
+            stencilBuffer: false
+        };
+
+        // save pass
+        const savePass = new SavePass(
+            new THREE.WebGLRenderTarget(
+                window.innerWidth,
+                window.innerHeight,
+                renderTargetParameters
+            )
+        );
+
+        // blend pass
+        const blendPass = new ShaderPass(BlendShader, "tDiffuse1");
+        blendPass.uniforms["tDiffuse2"].value = savePass.renderTarget.texture;
+        blendPass.uniforms["mixRatio"].value = 0.8;
+
+        // output pass
+        const outputPass = new ShaderPass(CopyShader);
+        outputPass.renderToScreen = true;
+
+        // adding passes to composer
+        composer.addPass(renderPass);
+        composer.addPass(blendPass);
+        composer.addPass(savePass);
+        composer.addPass(outputPass);
+
+        return composer;
     }
 
     init(THREE, controls, renderer, scene, camera, pointsLine) {
@@ -29,9 +76,12 @@ export default class Animation {
         camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 3000));
 
 
+        let composer = this.blurInit(THREE, scene, camera, renderer);
+
         function update() {
             // controls.update();
-            renderer.render(scene, camera);
+            composer.render();
+            // renderer.render(scene, camera);
             if (camPosIndex < posIndex && camPosIndex < 3000) {
                 camPos = pointsLine.getPoint(camPosIndex / 3000);
                 camRot = pointsLine.getTangent(camPosIndex / 3000);

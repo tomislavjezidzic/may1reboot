@@ -7203,6 +7203,643 @@ var GLTFLoader = function () {
 
 /***/ }),
 
+/***/ "./node_modules/three/examples/jsm/postprocessing/EffectComposer.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/EffectComposer.js ***!
+  \**************************************************************************/
+/*! exports provided: EffectComposer, Pass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EffectComposer", function() { return EffectComposer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Pass", function() { return Pass; });
+/* harmony import */ var _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../build/three.module.js */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var _shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shaders/CopyShader.js */ "./node_modules/three/examples/jsm/shaders/CopyShader.js");
+/* harmony import */ var _postprocessing_ShaderPass_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../postprocessing/ShaderPass.js */ "./node_modules/three/examples/jsm/postprocessing/ShaderPass.js");
+/* harmony import */ var _postprocessing_MaskPass_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../postprocessing/MaskPass.js */ "./node_modules/three/examples/jsm/postprocessing/MaskPass.js");
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+
+
+
+
+
+var EffectComposer = function (renderer, renderTarget) {
+  this.renderer = renderer;
+
+  if (renderTarget === undefined) {
+    var parameters = {
+      minFilter: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["LinearFilter"],
+      magFilter: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["LinearFilter"],
+      format: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["RGBAFormat"],
+      stencilBuffer: false
+    };
+    var size = renderer.getSize(new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["Vector2"]());
+    this._pixelRatio = renderer.getPixelRatio();
+    this._width = size.width;
+    this._height = size.height;
+    renderTarget = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["WebGLRenderTarget"](this._width * this._pixelRatio, this._height * this._pixelRatio, parameters);
+    renderTarget.texture.name = 'EffectComposer.rt1';
+  } else {
+    this._pixelRatio = 1;
+    this._width = renderTarget.width;
+    this._height = renderTarget.height;
+  }
+
+  this.renderTarget1 = renderTarget;
+  this.renderTarget2 = renderTarget.clone();
+  this.renderTarget2.texture.name = 'EffectComposer.rt2';
+  this.writeBuffer = this.renderTarget1;
+  this.readBuffer = this.renderTarget2;
+  this.renderToScreen = true;
+  this.passes = []; // dependencies
+
+  if (_shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_1__["CopyShader"] === undefined) {
+    console.error('THREE.EffectComposer relies on CopyShader');
+  }
+
+  if (_postprocessing_ShaderPass_js__WEBPACK_IMPORTED_MODULE_2__["ShaderPass"] === undefined) {
+    console.error('THREE.EffectComposer relies on ShaderPass');
+  }
+
+  this.copyPass = new _postprocessing_ShaderPass_js__WEBPACK_IMPORTED_MODULE_2__["ShaderPass"](_shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_1__["CopyShader"]);
+  this.clock = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["Clock"]();
+};
+
+Object.assign(EffectComposer.prototype, {
+  swapBuffers: function () {
+    var tmp = this.readBuffer;
+    this.readBuffer = this.writeBuffer;
+    this.writeBuffer = tmp;
+  },
+  addPass: function (pass) {
+    this.passes.push(pass);
+    pass.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+  },
+  insertPass: function (pass, index) {
+    this.passes.splice(index, 0, pass);
+  },
+  isLastEnabledPass: function (passIndex) {
+    for (var i = passIndex + 1; i < this.passes.length; i++) {
+      if (this.passes[i].enabled) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+  render: function (deltaTime) {
+    // deltaTime value is in seconds
+    if (deltaTime === undefined) {
+      deltaTime = this.clock.getDelta();
+    }
+
+    var currentRenderTarget = this.renderer.getRenderTarget();
+    var maskActive = false;
+    var pass,
+        i,
+        il = this.passes.length;
+
+    for (i = 0; i < il; i++) {
+      pass = this.passes[i];
+      if (pass.enabled === false) continue;
+      pass.renderToScreen = this.renderToScreen && this.isLastEnabledPass(i);
+      pass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime, maskActive);
+
+      if (pass.needsSwap) {
+        if (maskActive) {
+          var context = this.renderer.getContext();
+          var stencil = this.renderer.state.buffers.stencil; //context.stencilFunc( context.NOTEQUAL, 1, 0xffffffff );
+
+          stencil.setFunc(context.NOTEQUAL, 1, 0xffffffff);
+          this.copyPass.render(this.renderer, this.writeBuffer, this.readBuffer, deltaTime); //context.stencilFunc( context.EQUAL, 1, 0xffffffff );
+
+          stencil.setFunc(context.EQUAL, 1, 0xffffffff);
+        }
+
+        this.swapBuffers();
+      }
+
+      if (_postprocessing_MaskPass_js__WEBPACK_IMPORTED_MODULE_3__["MaskPass"] !== undefined) {
+        if (pass instanceof _postprocessing_MaskPass_js__WEBPACK_IMPORTED_MODULE_3__["MaskPass"]) {
+          maskActive = true;
+        } else if (pass instanceof _postprocessing_MaskPass_js__WEBPACK_IMPORTED_MODULE_3__["ClearMaskPass"]) {
+          maskActive = false;
+        }
+      }
+    }
+
+    this.renderer.setRenderTarget(currentRenderTarget);
+  },
+  reset: function (renderTarget) {
+    if (renderTarget === undefined) {
+      var size = this.renderer.getSize(new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["Vector2"]());
+      this._pixelRatio = this.renderer.getPixelRatio();
+      this._width = size.width;
+      this._height = size.height;
+      renderTarget = this.renderTarget1.clone();
+      renderTarget.setSize(this._width * this._pixelRatio, this._height * this._pixelRatio);
+    }
+
+    this.renderTarget1.dispose();
+    this.renderTarget2.dispose();
+    this.renderTarget1 = renderTarget;
+    this.renderTarget2 = renderTarget.clone();
+    this.writeBuffer = this.renderTarget1;
+    this.readBuffer = this.renderTarget2;
+  },
+  setSize: function (width, height) {
+    this._width = width;
+    this._height = height;
+    var effectiveWidth = this._width * this._pixelRatio;
+    var effectiveHeight = this._height * this._pixelRatio;
+    this.renderTarget1.setSize(effectiveWidth, effectiveHeight);
+    this.renderTarget2.setSize(effectiveWidth, effectiveHeight);
+
+    for (var i = 0; i < this.passes.length; i++) {
+      this.passes[i].setSize(effectiveWidth, effectiveHeight);
+    }
+  },
+  setPixelRatio: function (pixelRatio) {
+    this._pixelRatio = pixelRatio;
+    this.setSize(this._width, this._height);
+  }
+});
+
+var Pass = function () {
+  // if set to true, the pass is processed by the composer
+  this.enabled = true; // if set to true, the pass indicates to swap read and write buffer after rendering
+
+  this.needsSwap = true; // if set to true, the pass clears its buffer before rendering
+
+  this.clear = false; // if set to true, the result of the pass is rendered to screen. This is set automatically by EffectComposer.
+
+  this.renderToScreen = false;
+};
+
+Object.assign(Pass.prototype, {
+  setSize: function ()
+  /* width, height */
+  {},
+  render: function ()
+  /* renderer, writeBuffer, readBuffer, deltaTime, maskActive */
+  {
+    console.error('THREE.Pass: .render() must be implemented in derived pass.');
+  }
+}); // Helper for passes that need to fill the viewport with a single quad.
+
+Pass.FullScreenQuad = function () {
+  var camera = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["OrthographicCamera"](-1, 1, 1, -1, 0, 1);
+  var geometry = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["PlaneBufferGeometry"](2, 2);
+
+  var FullScreenQuad = function (material) {
+    this._mesh = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["Mesh"](geometry, material);
+  };
+
+  Object.defineProperty(FullScreenQuad.prototype, 'material', {
+    get: function () {
+      return this._mesh.material;
+    },
+    set: function (value) {
+      this._mesh.material = value;
+    }
+  });
+  Object.assign(FullScreenQuad.prototype, {
+    dispose: function () {
+      this._mesh.geometry.dispose();
+    },
+    render: function (renderer) {
+      renderer.render(this._mesh, camera);
+    }
+  });
+  return FullScreenQuad;
+}();
+
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/postprocessing/MaskPass.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/MaskPass.js ***!
+  \********************************************************************/
+/*! exports provided: MaskPass, ClearMaskPass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MaskPass", function() { return MaskPass; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ClearMaskPass", function() { return ClearMaskPass; });
+/* harmony import */ var _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../postprocessing/Pass.js */ "./node_modules/three/examples/jsm/postprocessing/Pass.js");
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+
+var MaskPass = function (scene, camera) {
+  _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].call(this);
+  this.scene = scene;
+  this.camera = camera;
+  this.clear = true;
+  this.needsSwap = false;
+  this.inverse = false;
+};
+
+MaskPass.prototype = Object.assign(Object.create(_postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].prototype), {
+  constructor: MaskPass,
+  render: function (renderer, writeBuffer, readBuffer
+  /*, deltaTime, maskActive */
+  ) {
+    var context = renderer.getContext();
+    var state = renderer.state; // don't update color or depth
+
+    state.buffers.color.setMask(false);
+    state.buffers.depth.setMask(false); // lock buffers
+
+    state.buffers.color.setLocked(true);
+    state.buffers.depth.setLocked(true); // set up stencil
+
+    var writeValue, clearValue;
+
+    if (this.inverse) {
+      writeValue = 0;
+      clearValue = 1;
+    } else {
+      writeValue = 1;
+      clearValue = 0;
+    }
+
+    state.buffers.stencil.setTest(true);
+    state.buffers.stencil.setOp(context.REPLACE, context.REPLACE, context.REPLACE);
+    state.buffers.stencil.setFunc(context.ALWAYS, writeValue, 0xffffffff);
+    state.buffers.stencil.setClear(clearValue);
+    state.buffers.stencil.setLocked(true); // draw into the stencil buffer
+
+    renderer.setRenderTarget(readBuffer);
+    if (this.clear) renderer.clear();
+    renderer.render(this.scene, this.camera);
+    renderer.setRenderTarget(writeBuffer);
+    if (this.clear) renderer.clear();
+    renderer.render(this.scene, this.camera); // unlock color and depth buffer for subsequent rendering
+
+    state.buffers.color.setLocked(false);
+    state.buffers.depth.setLocked(false); // only render where stencil is set to 1
+
+    state.buffers.stencil.setLocked(false);
+    state.buffers.stencil.setFunc(context.EQUAL, 1, 0xffffffff); // draw if == 1
+
+    state.buffers.stencil.setOp(context.KEEP, context.KEEP, context.KEEP);
+    state.buffers.stencil.setLocked(true);
+  }
+});
+
+var ClearMaskPass = function () {
+  _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].call(this);
+  this.needsSwap = false;
+};
+
+ClearMaskPass.prototype = Object.create(_postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].prototype);
+Object.assign(ClearMaskPass.prototype, {
+  render: function (renderer
+  /*, writeBuffer, readBuffer, deltaTime, maskActive */
+  ) {
+    renderer.state.buffers.stencil.setLocked(false);
+    renderer.state.buffers.stencil.setTest(false);
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/postprocessing/Pass.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/Pass.js ***!
+  \****************************************************************/
+/*! exports provided: Pass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Pass", function() { return Pass; });
+/* harmony import */ var _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../build/three.module.js */ "./node_modules/three/build/three.module.js");
+
+
+function Pass() {
+  // if set to true, the pass is processed by the composer
+  this.enabled = true; // if set to true, the pass indicates to swap read and write buffer after rendering
+
+  this.needsSwap = true; // if set to true, the pass clears its buffer before rendering
+
+  this.clear = false; // if set to true, the result of the pass is rendered to screen. This is set automatically by EffectComposer.
+
+  this.renderToScreen = false;
+}
+
+Object.assign(Pass.prototype, {
+  setSize: function ()
+  /* width, height */
+  {},
+  render: function ()
+  /* renderer, writeBuffer, readBuffer, deltaTime, maskActive */
+  {
+    console.error('THREE.Pass: .render() must be implemented in derived pass.');
+  }
+}); // Helper for passes that need to fill the viewport with a single quad.
+
+Pass.FullScreenQuad = function () {
+  var camera = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["OrthographicCamera"](-1, 1, 1, -1, 0, 1);
+  var geometry = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["PlaneBufferGeometry"](2, 2);
+
+  var FullScreenQuad = function (material) {
+    this._mesh = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["Mesh"](geometry, material);
+  };
+
+  Object.defineProperty(FullScreenQuad.prototype, 'material', {
+    get: function () {
+      return this._mesh.material;
+    },
+    set: function (value) {
+      this._mesh.material = value;
+    }
+  });
+  Object.assign(FullScreenQuad.prototype, {
+    dispose: function () {
+      this._mesh.geometry.dispose();
+    },
+    render: function (renderer) {
+      renderer.render(this._mesh, camera);
+    }
+  });
+  return FullScreenQuad;
+}();
+
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/postprocessing/RenderPass.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/RenderPass.js ***!
+  \**********************************************************************/
+/*! exports provided: RenderPass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderPass", function() { return RenderPass; });
+/* harmony import */ var _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../postprocessing/Pass.js */ "./node_modules/three/examples/jsm/postprocessing/Pass.js");
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+
+var RenderPass = function (scene, camera, overrideMaterial, clearColor, clearAlpha) {
+  _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].call(this);
+  this.scene = scene;
+  this.camera = camera;
+  this.overrideMaterial = overrideMaterial;
+  this.clearColor = clearColor;
+  this.clearAlpha = clearAlpha !== undefined ? clearAlpha : 0;
+  this.clear = true;
+  this.clearDepth = false;
+  this.needsSwap = false;
+};
+
+RenderPass.prototype = Object.assign(Object.create(_postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_0__["Pass"].prototype), {
+  constructor: RenderPass,
+  render: function (renderer, writeBuffer, readBuffer
+  /*, deltaTime, maskActive */
+  ) {
+    var oldAutoClear = renderer.autoClear;
+    renderer.autoClear = false;
+    this.scene.overrideMaterial = this.overrideMaterial;
+    var oldClearColor, oldClearAlpha;
+
+    if (this.clearColor) {
+      oldClearColor = renderer.getClearColor().getHex();
+      oldClearAlpha = renderer.getClearAlpha();
+      renderer.setClearColor(this.clearColor, this.clearAlpha);
+    }
+
+    if (this.clearDepth) {
+      renderer.clearDepth();
+    }
+
+    renderer.setRenderTarget(this.renderToScreen ? null : readBuffer); // TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
+
+    if (this.clear) renderer.clear(renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil);
+    renderer.render(this.scene, this.camera);
+
+    if (this.clearColor) {
+      renderer.setClearColor(oldClearColor, oldClearAlpha);
+    }
+
+    this.scene.overrideMaterial = null;
+    renderer.autoClear = oldAutoClear;
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/postprocessing/SavePass.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/SavePass.js ***!
+  \********************************************************************/
+/*! exports provided: SavePass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SavePass", function() { return SavePass; });
+/* harmony import */ var _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../build/three.module.js */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../postprocessing/Pass.js */ "./node_modules/three/examples/jsm/postprocessing/Pass.js");
+/* harmony import */ var _shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shaders/CopyShader.js */ "./node_modules/three/examples/jsm/shaders/CopyShader.js");
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+
+
+
+var SavePass = function (renderTarget) {
+  _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].call(this);
+  if (_shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_2__["CopyShader"] === undefined) console.error("SavePass relies on CopyShader");
+  var shader = _shaders_CopyShader_js__WEBPACK_IMPORTED_MODULE_2__["CopyShader"];
+  this.textureID = "tDiffuse";
+  this.uniforms = _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["UniformsUtils"].clone(shader.uniforms);
+  this.material = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["ShaderMaterial"]({
+    uniforms: this.uniforms,
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader
+  });
+  this.renderTarget = renderTarget;
+
+  if (this.renderTarget === undefined) {
+    this.renderTarget = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["WebGLRenderTarget"](window.innerWidth, window.innerHeight, {
+      minFilter: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["LinearFilter"],
+      magFilter: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["LinearFilter"],
+      format: _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["RGBFormat"],
+      stencilBuffer: false
+    });
+    this.renderTarget.texture.name = "SavePass.rt";
+  }
+
+  this.needsSwap = false;
+  this.fsQuad = new _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].FullScreenQuad(this.material);
+};
+
+SavePass.prototype = Object.assign(Object.create(_postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].prototype), {
+  constructor: SavePass,
+  render: function (renderer, writeBuffer, readBuffer) {
+    if (this.uniforms[this.textureID]) {
+      this.uniforms[this.textureID].value = readBuffer.texture;
+    }
+
+    renderer.setRenderTarget(this.renderTarget);
+    if (this.clear) renderer.clear();
+    this.fsQuad.render(renderer);
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/postprocessing/ShaderPass.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/postprocessing/ShaderPass.js ***!
+  \**********************************************************************/
+/*! exports provided: ShaderPass */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ShaderPass", function() { return ShaderPass; });
+/* harmony import */ var _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../build/three.module.js */ "./node_modules/three/build/three.module.js");
+/* harmony import */ var _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../postprocessing/Pass.js */ "./node_modules/three/examples/jsm/postprocessing/Pass.js");
+/**
+ * @author alteredq / http://alteredqualia.com/
+ */
+
+
+
+var ShaderPass = function (shader, textureID) {
+  _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].call(this);
+  this.textureID = textureID !== undefined ? textureID : "tDiffuse";
+
+  if (shader instanceof _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["ShaderMaterial"]) {
+    this.uniforms = shader.uniforms;
+    this.material = shader;
+  } else if (shader) {
+    this.uniforms = _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["UniformsUtils"].clone(shader.uniforms);
+    this.material = new _build_three_module_js__WEBPACK_IMPORTED_MODULE_0__["ShaderMaterial"]({
+      defines: Object.assign({}, shader.defines),
+      uniforms: this.uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
+    });
+  }
+
+  this.fsQuad = new _postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].FullScreenQuad(this.material);
+};
+
+ShaderPass.prototype = Object.assign(Object.create(_postprocessing_Pass_js__WEBPACK_IMPORTED_MODULE_1__["Pass"].prototype), {
+  constructor: ShaderPass,
+  render: function (renderer, writeBuffer, readBuffer
+  /*, deltaTime, maskActive */
+  ) {
+    if (this.uniforms[this.textureID]) {
+      this.uniforms[this.textureID].value = readBuffer.texture;
+    }
+
+    this.fsQuad.material = this.material;
+
+    if (this.renderToScreen) {
+      renderer.setRenderTarget(null);
+      this.fsQuad.render(renderer);
+    } else {
+      renderer.setRenderTarget(writeBuffer); // TODO: Avoid using autoClear properties, see https://github.com/mrdoob/three.js/pull/15571#issuecomment-465669600
+
+      if (this.clear) renderer.clear(renderer.autoClearColor, renderer.autoClearDepth, renderer.autoClearStencil);
+      this.fsQuad.render(renderer);
+    }
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/shaders/BlendShader.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/shaders/BlendShader.js ***!
+  \****************************************************************/
+/*! exports provided: BlendShader */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BlendShader", function() { return BlendShader; });
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Blend two textures
+ */
+var BlendShader = {
+  uniforms: {
+    "tDiffuse1": {
+      value: null
+    },
+    "tDiffuse2": {
+      value: null
+    },
+    "mixRatio": {
+      value: 0.5
+    },
+    "opacity": {
+      value: 1.0
+    }
+  },
+  vertexShader: ["varying vec2 vUv;", "void main() {", "	vUv = uv;", "	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+  fragmentShader: ["uniform float opacity;", "uniform float mixRatio;", "uniform sampler2D tDiffuse1;", "uniform sampler2D tDiffuse2;", "varying vec2 vUv;", "void main() {", "	vec4 texel1 = texture2D( tDiffuse1, vUv );", "	vec4 texel2 = texture2D( tDiffuse2, vUv );", "	gl_FragColor = opacity * mix( texel1, texel2, mixRatio );", "}"].join("\n")
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/three/examples/jsm/shaders/CopyShader.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/three/examples/jsm/shaders/CopyShader.js ***!
+  \***************************************************************/
+/*! exports provided: CopyShader */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CopyShader", function() { return CopyShader; });
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Full-screen textured quad shader
+ */
+var CopyShader = {
+  uniforms: {
+    "tDiffuse": {
+      value: null
+    },
+    "opacity": {
+      value: 1.0
+    }
+  },
+  vertexShader: ["varying vec2 vUv;", "void main() {", "	vUv = uv;", "	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+  fragmentShader: ["uniform float opacity;", "uniform sampler2D tDiffuse;", "varying vec2 vUv;", "void main() {", "	vec4 texel = texture2D( tDiffuse, vUv );", "	gl_FragColor = opacity * texel;", "}"].join("\n")
+};
+
+
+/***/ }),
+
 /***/ "./static/js/components/Animation.js":
 /*!*******************************************!*\
   !*** ./static/js/components/Animation.js ***!
@@ -7213,11 +7850,24 @@ var GLTFLoader = function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Animation; });
+/* harmony import */ var three_examples_jsm_postprocessing_EffectComposer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! three/examples/jsm/postprocessing/EffectComposer */ "./node_modules/three/examples/jsm/postprocessing/EffectComposer.js");
+/* harmony import */ var three_examples_jsm_postprocessing_RenderPass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three/examples/jsm/postprocessing/RenderPass */ "./node_modules/three/examples/jsm/postprocessing/RenderPass.js");
+/* harmony import */ var three_examples_jsm_postprocessing_ShaderPass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! three/examples/jsm/postprocessing/ShaderPass */ "./node_modules/three/examples/jsm/postprocessing/ShaderPass.js");
+/* harmony import */ var three_examples_jsm_postprocessing_SavePass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! three/examples/jsm/postprocessing/SavePass */ "./node_modules/three/examples/jsm/postprocessing/SavePass.js");
+/* harmony import */ var three_examples_jsm_shaders_CopyShader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! three/examples/jsm/shaders/CopyShader */ "./node_modules/three/examples/jsm/shaders/CopyShader.js");
+/* harmony import */ var three_examples_jsm_shaders_BlendShader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! three/examples/jsm/shaders/BlendShader */ "./node_modules/three/examples/jsm/shaders/BlendShader.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+
+
 
 var Animation =
 /*#__PURE__*/
@@ -7227,6 +7877,34 @@ function () {
   }
 
   _createClass(Animation, [{
+    key: "blurInit",
+    value: function blurInit(THREE, scene, camera, renderer) {
+      // Post-processing inits
+      var composer = new three_examples_jsm_postprocessing_EffectComposer__WEBPACK_IMPORTED_MODULE_0__["EffectComposer"](renderer); // render pass
+
+      var renderPass = new three_examples_jsm_postprocessing_RenderPass__WEBPACK_IMPORTED_MODULE_1__["RenderPass"](scene, camera);
+      var renderTargetParameters = {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        stencilBuffer: false
+      }; // save pass
+
+      var savePass = new three_examples_jsm_postprocessing_SavePass__WEBPACK_IMPORTED_MODULE_3__["SavePass"](new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParameters)); // blend pass
+
+      var blendPass = new three_examples_jsm_postprocessing_ShaderPass__WEBPACK_IMPORTED_MODULE_2__["ShaderPass"](three_examples_jsm_shaders_BlendShader__WEBPACK_IMPORTED_MODULE_5__["BlendShader"], "tDiffuse1");
+      blendPass.uniforms["tDiffuse2"].value = savePass.renderTarget.texture;
+      blendPass.uniforms["mixRatio"].value = 0.8; // output pass
+
+      var outputPass = new three_examples_jsm_postprocessing_ShaderPass__WEBPACK_IMPORTED_MODULE_2__["ShaderPass"](three_examples_jsm_shaders_CopyShader__WEBPACK_IMPORTED_MODULE_4__["CopyShader"]);
+      outputPass.renderToScreen = true; // adding passes to composer
+
+      composer.addPass(renderPass);
+      composer.addPass(blendPass);
+      composer.addPass(savePass);
+      composer.addPass(outputPass);
+      return composer;
+    }
+  }, {
     key: "init",
     value: function init(THREE, controls, renderer, scene, camera, pointsLine) {
       var camPosIndex = 0;
@@ -7246,10 +7924,11 @@ function () {
       camera.rotation.y = camRot.y;
       camera.rotation.z = camRot.z;
       camera.lookAt(pointsLine.getPoint((camPosIndex + 1) / 3000));
+      var composer = this.blurInit(THREE, scene, camera, renderer);
 
       function update() {
         // controls.update();
-        renderer.render(scene, camera);
+        composer.render(); // renderer.render(scene, camera);
 
         if (camPosIndex < posIndex && camPosIndex < 3000) {
           camPos = pointsLine.getPoint(camPosIndex / 3000);
