@@ -55,7 +55,7 @@ class WordpressDefaults {
 	}
 
 	public function acf_google_api_key(): void {
-		acf_update_setting( 'google_api_key', 'AIzaSyAQp51knI9aLgNomu_6JhFxMwiXoJFIkcw' );
+		acf_update_setting( 'google_api_key', '' );
 	}
 
 	public function ea_disable_classic_editor(): void {
