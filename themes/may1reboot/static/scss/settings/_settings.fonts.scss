@@ -1,12 +1,13 @@
 // HANKEN-GROTESK
-//@include font-face('Hanken-Grotesk', 'HankenGrotesk-Regular');
-//@include font-face('Hanken-Grotesk', 'HankenGrotesk-SemiBold', $font-weight: 600);
+@include font-face('SairaSemiCondensed-Bold', 'SairaSemiCondensed-Bold', $font-weight: 900);
+@include font-face('SairaSemiCondensed-Regular', 'SairaSemiCondensed-Regular');
 
 // FONT VARIABLES
-$hanken: 'Hanken-Grotesk', sans-serif;
+$bold: 'SairaSemiCondensed-Bold', sans-serif;
+$regular: 'SairaSemiCondensed-Regular', sans-serif;
 
 $base-size: 18;
 $base-line-height: 26;
 
-$font-primary: $hanken;
-$font-secondary: $hanken;
+$font-primary: $regular;
+$font-secondary: $bold;

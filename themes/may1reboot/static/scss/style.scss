@@ -4,7 +4,6 @@
 @import "settings/settings.config";
 @import "settings/settings.colors";
 @import "settings/settings.breakpoints";
-@import "settings/settings.fonts";
 @import "settings/settings.font-size";
 
 // TOOLS
@@ -20,6 +19,8 @@
 @import "tools/tools.poly-fluid";
 @import "tools/tools.viewport";
 @import "tools/tools.font-face";
+
+@import "settings/settings.fonts";
 
 // GENERIC
 @import "generic/generic.reset";
