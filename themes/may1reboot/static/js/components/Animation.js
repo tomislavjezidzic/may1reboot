@@ -54,10 +54,13 @@ export default class Animation {
         let camPosIndex = 0;
         let posIndex = 0;
         let diff = 0;
+        let counter = 0;
+        const progress = [470, 670, 350, 650, 840];
 
         document.querySelector("button").addEventListener("click", ev => {
             ev.preventDefault();
-            posIndex += 498;
+            posIndex += progress[counter];
+            counter ++;
 
             diff = posIndex - camPosIndex;
         });

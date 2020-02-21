@@ -35,7 +35,7 @@ docReady(() => {
     const sparkles = new Sparkles();
     const pointsLine = new PointsLine().init(THREE);
     // const cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
-    // const houseLights = new HouseLights().init(THREE, scene);
+    const houseLights = new HouseLights().init(THREE, scene);
 
     // new RandomBoxes().init(THREE, scene, pointsLine);
     // new StartEndSphere().init(THREE, scene);

@@ -25,7 +25,7 @@ export default class Sparkles {
             sparkle.position.y = 0.1 * this.randomNumber();
             sparkle.position.z = this.randomNumber() * height - (height / 2);
             let sprite = new THREE.Sprite(this.spriteMaterial);
-            sprite.scale.set(0.003, 0.003, 0.003);
+            sprite.scale.set(0.004, 0.004, 0.004);
             sparkle.add(sprite);
             sparkle.name = "sparkle";
             let num = 0;
