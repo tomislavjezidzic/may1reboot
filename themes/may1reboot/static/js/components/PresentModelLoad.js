@@ -1,6 +1,7 @@
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import gsap from "gsap";
 
-export default class MainModelLoad {
+export default class PresentModelLoad {
     constructor(manager) {
         this.loader = new GLTFLoader(manager);
     }
@@ -11,7 +12,7 @@ export default class MainModelLoad {
             side: THREE.DoubleSide,
         });
         this.loader.load(
-            `${window.modelPath}`,
+            `${window.presentPath}`,
             (gltf) => {
                 const model = gltf.scene;
                 model.traverse((obj) => {
@@ -21,7 +22,11 @@ export default class MainModelLoad {
                         obj.receiveShadow = true;
                     }
                 });
+                model.scale.set(0.001, 0.001, 0.001);
+                model.position.set(1.4, 0.59, 0.4);
                 scene.add(model);
+
+                this.animatePresent(model);
             },
             (xhr) => {
                 // console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
@@ -30,5 +35,27 @@ export default class MainModelLoad {
                 // console.error('An error happened', error);
             },
         );
+    }
+
+    animatePresent(model) {
+        if (!model) {
+            return;
+        }
+
+        gsap.to(model.scale, {
+            duration: 0.7,
+            delay: 9.5,
+            x: 0.05,
+            y: 0.05,
+            z: 0.05,
+            ease: "elastic.out(1, 0.3)"
+        });
+
+        function rotate() {
+            model.rotation.y = model.rotation.y + 0.01;
+            requestAnimationFrame(rotate);
+        }
+
+        rotate();
     }
 }

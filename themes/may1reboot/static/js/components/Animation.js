@@ -4,6 +4,7 @@ import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
 import {SavePass} from "three/examples/jsm/postprocessing/SavePass";
 import {CopyShader} from "three/examples/jsm/shaders/CopyShader";
 import {BlendShader} from "three/examples/jsm/shaders/BlendShader";
+import PresentModelLoad from "./PresentModelLoad";
 
 export default class Animation {
     constructor() {
@@ -43,24 +44,29 @@ export default class Animation {
 
         // adding passes to composer
         composer.addPass(renderPass);
-        composer.addPass(blendPass);
-        composer.addPass(savePass);
-        composer.addPass(outputPass);
+        // composer.addPass(blendPass);
+        // composer.addPass(savePass);
+        // composer.addPass(outputPass);
 
         return composer;
     }
 
-    init(THREE, controls, renderer, scene, camera, pointsLine) {
+    init(THREE, controls, renderer, scene, camera, pointsLine, manager) {
         let camPosIndex = 0;
         let posIndex = 0;
         let diff = 0;
         let counter = 0;
         const progress = [470, 670, 350, 650, 840];
+        let present = new PresentModelLoad(manager);
 
         document.querySelector("button").addEventListener("click", ev => {
             ev.preventDefault();
             posIndex += progress[counter];
             counter ++;
+
+            if(counter === 2){
+                present.init(THREE, scene);
+            }
 
             diff = posIndex - camPosIndex;
         });

@@ -9,7 +9,7 @@ export default class Scene {
 
         scene.background = fogColor;
         // TODO
-        scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
+        // scene.fog = new THREE.Fog(fogColor, 0.000001, 4);
 
         return scene;
     }

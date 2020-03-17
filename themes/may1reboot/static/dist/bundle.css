@@ -121,6 +121,25 @@ button {
   top: 30px;
   left: 30px; }
 
+.c-loading {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 10px;
+  width: 100%;
+  background: #aaa;
+  -webkit-transform: translateX(-100%);
+          transform: translateX(-100%); }
+  .c-loading__overlay {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #333;
+    z-index: 10; }
+
 .u-clearfix {
   display: inline-block; }
 

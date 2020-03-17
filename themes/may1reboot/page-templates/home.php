@@ -8,6 +8,7 @@ get_header();
 
 <script>
     window.modelPath = "<?= bu('models/main_model_2.glb'); ?>";
+    window.presentPath = "<?= bu('models/present.glb'); ?>";
     window.sparkleGlow = "<?= bu('images/glow.png'); ?>";
 </script>
 
@@ -21,6 +22,7 @@ get_header();
 <!-- //PAGE WRAPPER -->
 <?php
 
+get_partial('layout/loading-layer');
 get_footer();
 
 ?>
