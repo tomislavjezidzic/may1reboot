@@ -5,6 +5,12 @@ import {SavePass} from "three/examples/jsm/postprocessing/SavePass";
 import {CopyShader} from "three/examples/jsm/shaders/CopyShader";
 import {BlendShader} from "three/examples/jsm/shaders/BlendShader";
 import PresentModelLoad from "./PresentModelLoad";
+import _FirstStep from "@/components/_FirstStep";
+import _ThirdStep from "@/components/_ThirdStep";
+import _FourthStep from "@/components/_FourthStep";
+import _LastStep from "@/components/_LastStep";
+
+import gsap from "gsap";
 
 export default class Animation {
     constructor() {
@@ -57,19 +63,50 @@ export default class Animation {
         let diff = 0;
         let counter = 0;
         const progress = [470, 670, 350, 650, 840];
-        let present = new PresentModelLoad(manager);
+        const present = new PresentModelLoad(manager);
+        const firstStep = new _FirstStep();
+        const thirdStep = new _ThirdStep();
+        const fourthStep = new _FourthStep();
+        const lastStep = new _LastStep();
 
         document.querySelector("button").addEventListener("click", ev => {
-            ev.preventDefault();
-            posIndex += progress[counter];
-            counter ++;
+                ev.preventDefault();
+                posIndex += progress[counter];
+                counter++;
 
-            if(counter === 2){
-                present.init(THREE, scene);
+                switch (counter) {
+                    case 1:
+                        setTimeout(() => {
+                            console.log("1 step");
+                            firstStep.init();
+                        }, 9000);
+                        break;
+                    case 2:
+                        console.log("2 step");
+                        present.init(THREE, scene);
+                        break;
+                    case 3:
+                        setTimeout(() => {
+                            console.log("3 step");
+                            thirdStep.init();
+                        }, 9000);
+                        break;
+                    case 4:
+                        setTimeout(() => {
+                            console.log("4 step");
+                            fourthStep.init();
+                        }, 12000);
+                        break;
+                    default:
+                        setTimeout(() => {
+                            console.log("last step");
+                            lastStep.init(scene);
+                        }, 12000);
+                }
+
+                diff = posIndex - camPosIndex;
             }
-
-            diff = posIndex - camPosIndex;
-        });
+        );
 
         let camPos = pointsLine.getPoint(camPosIndex / 3000);
         let camRot = pointsLine.getTangent(camPosIndex / 3000);

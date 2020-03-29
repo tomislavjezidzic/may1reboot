@@ -18,6 +18,7 @@ import Sparkles from "./components/Sparkles";
 import HouseLights from "./components/HouseLights";
 import PresentModelLoad from "./components/PresentModelLoad";
 import Loading from "./components/Loading";
+import Typing from "@/components/Typing";
 
 function docReady(fn) {
     if (document.readyState === "complete" || document.readyState === "interactive") {
@@ -70,4 +71,7 @@ docReady(() => {
     globalSparkleContainer.position.z = 0;
     // sparkles.init(THREE, globalSparkleContainer, 3.5, 3.5, 45);
     // scene.add(globalSparkleContainer);
+
+    // typing effect
+    new Typing();
 });
