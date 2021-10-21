@@ -35,11 +35,10 @@
     "browser-sync-webpack-plugin": "^2.2.2",
     "css-loader": "^1.0.1",
     "mini-css-extract-plugin": "^0.4.4",
-    "node-sass": "^4.10.0",
     "normalize.css": "^8.0.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
-    "sass-loader": "^7.1.0",
+    "sass-loader": "^7.3.1",
     "stylelint": "^9.8.0",
     "stylelint-config-recommended": "^2.0.0",
     "stylelint-scss": "^3.4.0",
@@ -51,6 +50,7 @@
   },
   "dependencies": {
     "gsap": "^3.6.0",
+    "sass": "^1.43.3",
     "three": "^0.125.0",
     "three-orbit-controls": "^82.1.0"
   }
