@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/tomislavjezidzic/may1reboot/"
   },
   "browserslist": [
     "> 0.5%",
@@ -53,5 +53,9 @@
     "sass": "^1.43.3",
     "three": "^0.125.0",
     "three-orbit-controls": "^82.1.0"
+  },
+  "engines": {
+    "node": "12.16.1",
+    "npm": "7.5.3"
   }
 }

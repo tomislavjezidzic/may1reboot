@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @function line-height($fontSize, $lineHeight: $fontSize) {
     @return $lineHeight/$fontSize;
 }
@@ -73,7 +75,7 @@
 
 @mixin default-font-size {
     font-size: $base-size + px;
-    line-height: ($base-line-height/$base-size) + em;
+    line-height: math.div($base-line-height,$base-size) + em;
 }
 
 @mixin font-default($fontWeight: 'default') {
