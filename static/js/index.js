@@ -1,22 +1,22 @@
 import '../scss/style.scss';
 import * as THREE from 'three/build/three.module';
 
-let OrbitControls = require('three-orbit-controls')(THREE);
+// let OrbitControls = require('three-orbit-controls')(THREE);
 import Renderer from "./components/Renderer";
 import Scene from "./components/Scene";
 import Camera from "./components/Camera";
-import Controls from "./components/Controls";
+// import Controls from "./components/Controls";
 import PointsLine from "./components/PointsLine";
-import CameraPathLine from "./components/CameraPathLine";
+// import CameraPathLine from "./components/CameraPathLine";
 import Animation from "./components/Animation";
-import RandomBoxes from "./components/RandomBoxes";
-import StartEndSphere from "./components/StartEndSphere";
+// import RandomBoxes from "./components/RandomBoxes";
+// import StartEndSphere from "./components/StartEndSphere";
 import MainModelLoad from "./components/MainModelLoad";
 import MainLight from "./components/MainLight";
 import Floor from "./components/Floor";
 import Sparkles from "./components/Sparkles";
 import HouseLights from "./components/HouseLights";
-import PresentModelLoad from "./components/PresentModelLoad";
+// import PresentModelLoad from "./components/PresentModelLoad";
 import Loading from "./components/Loading";
 import Typing from "@/components/Typing";
 
@@ -52,7 +52,7 @@ docReady(() => {
     const controls = null;
     const sparkles = new Sparkles();
     const pointsLine = new PointsLine().init(THREE);
-    const cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
+    // const cameraPathLine = new CameraPathLine().init(THREE, scene, pointsLine);
     const houseLights = new HouseLights().init(THREE, scene);
 
     // new RandomBoxes().init(THREE, scene, pointsLine);
@@ -69,8 +69,8 @@ docReady(() => {
     globalSparkleContainer.position.x = 1;
     globalSparkleContainer.position.y = 0.06;
     globalSparkleContainer.position.z = 0;
-    // sparkles.init(THREE, globalSparkleContainer, 3.5, 3.5, 45);
-    // scene.add(globalSparkleContainer);
+    sparkles.init(THREE, globalSparkleContainer, 3.5, 3.5, 45);
+    scene.add(globalSparkleContainer);
 
     // typing effect
     new Typing();

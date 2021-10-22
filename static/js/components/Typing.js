@@ -6,7 +6,8 @@ export default class Typing {
     }
 
     init() {
-        const items = ['web developer  ', 'javascript developer  ', 'full stack developer  ']; // keep a space after array items
+        // const items = ['web developer  ', 'javascript developer  ', 'full stack developer  ']; // keep a space after array items
+        const items = [' ', ' ', ' ']; // keep a space after array items
 
         let index = 0; // index of array
         let charIndex = 0; // index of character in string

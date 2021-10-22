@@ -10,8 +10,6 @@ import _ThirdStep from "@/components/_ThirdStep";
 import _FourthStep from "@/components/_FourthStep";
 import _LastStep from "@/components/_LastStep";
 
-import gsap from "gsap";
-
 export default class Animation {
     constructor() {
 
@@ -50,9 +48,9 @@ export default class Animation {
 
         // adding passes to composer
         composer.addPass(renderPass);
-        // composer.addPass(blendPass);
-        // composer.addPass(savePass);
-        // composer.addPass(outputPass);
+        composer.addPass(blendPass);
+        composer.addPass(savePass);
+        composer.addPass(outputPass);
 
         return composer;
     }

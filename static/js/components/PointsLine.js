@@ -21,6 +21,6 @@ export default class PointsLine {
 
         );
 
-        return new THREE.CatmullRomCurve3(pointsArr, false, "catmullrom", 0);
+        return new THREE.CatmullRomCurve3(pointsArr, false, "catmullrom", 0.5);
     }
 }
