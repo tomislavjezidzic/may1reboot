@@ -46,7 +46,7 @@
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.26.0",
     "webpack-bundle-analyzer": "^3.0.3",
-    "webpack-cli": "^3.1.2"
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "gsap": "^3.6.0",
